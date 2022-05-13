@@ -1,69 +1,83 @@
-let displayNum = NaN;
-let currentPow = 0;
 let operator = "";
 let operands = [0, 0];
 let currentOperandIndex = 0;
 let operandsActivated = [false, false];
 
-const add = function(numOne, numTwo) {
-    return numOne + numTwo;
-};
+// operation: The operation to perform
+// Computes the two number given based on their operation
+// numOne: first number for computation
+// numTwo: second number for computation
+function operate(numOne, numTwo, operation) {
+    if (operation === "+") {
+        return numOne + numTwo;
+    } else if (operation === "-") {
+        return numOne - numTwo;
+    } else if (operation === "/") {
+        return numOne/numTwo;
+    } else if (operation === "*") {
+        return numOne * numTwo;
+    } else if (operation === "%") {
+        return numOne % numTwo;
+    } else {
+        return NaN;
+    }
+}
 
-const subtract = function(numOne, numTwo) {
-    return numOne - numTwo;
-};
-
-const sum = function(nums) {
-    return nums.reduce(
-        (prevVal, currentVal) => prevVal + currentVal,
-        0
-    );
-};
-
-const multiply = function(nums) {
-    return nums.reduce(
-        (prevVal, currentVal) => prevVal * currentVal,
-        1
-    );
-};
-
-const power = function(base, power) {
-
-    return Math.pow(base, power);
-
-};
-
-const factorial = function(num) {
-    if (num === 0) {
-        return 1;
-    } else if (num < 0) {
-        return "error"; // don't handle complex numbers here
+// Handles the corresponding input operator to match their
+// supposed functionality
+// inputOperator: The operator that the user currently inputs
+function handle_operators(inputOperator) {
+    if (!operandsActivated[0] && !operandsActivated[1]){
+        return;  // nothing to compute
+    } else if (operandsActivated[0] && !operandsActivated[1] &&
+            (operator !== "" || inputOperator === "equal") ) {
+        return; // already have an operator, don't need more operator yet
     }
 
-    let total = 1;
-    for (let i = 1; i <= num; ++i) {
-        total *= i;
+    if (operandsActivated[0] && operandsActivated[1] && operator !== "") {
+        // pairwise operation
+        // handle divide by 0 case somewhere later(?
+        operands[0] = operate(operands[0], operands[1], operator);
+        operandsActivated[1] = false;
     }
 
-    return total;
-};
+    if (inputOperator === "equal") {
+        operator = "";
+        leftDisplay.textContent = "";
+        rightDisplay.textContent = "" + operands[0];
+    } else {
+        operator = inputOperator;
+        rightDisplay.textContent = "";
+        leftDisplay.textContent = "" + operands[0] + " " + operator;
+    }
+    currentOperandIndex = 1;
+}
 
 const numbers = document.querySelectorAll("button.numbers");
-const display = document.querySelector(".display");
+const leftDisplay = document.querySelector(".operation.display");
+const rightDisplay = document.querySelector(".result.display");
+const operations = document.querySelectorAll("button.operators");
+const clearButton = document.querySelector("#equal");
 
 numbers.forEach((number) => {
     number.addEventListener('click', function(e) {
         let input = +number.getAttribute("id");
-        if (isNaN(displayNum)) {
-            displayNum = input;
+        if (!operandsActivated[currentOperandIndex]) {
             operandsActivated[currentOperandIndex] = true;
+            operands[currentOperandIndex] = input;
         } else {
-            displayNum = (displayNum * 10) + input;
+            operands[currentOperandIndex] = (operands[currentOperandIndex] * 10) + input;
         }
 
-        operands[currentOperandIndex] = displayNum;
-        display.textContent = "" + displayNum;
+        rightDisplay.textContent = "" + operands[currentOperandIndex];
         e.stopPropagation(); // stop any possible bubbling
     });
 });
 
+operations.forEach((operation) => {
+    operation.addEventListener('click', function(e) {
+        let input = operation.getAttribute("id");
+        handle_operators(input);
+        e.stopPropagation();
+    })
+});

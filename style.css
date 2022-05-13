@@ -29,11 +29,20 @@ body {
 
 .container .one {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column;
 }
 
 .container .one .display {
-    font-size: 100px;
-    padding-right: 20px;
+    flex: 1;
+}
+
+.container .one .operation.display {
+    align-self: flex-start;
+    font-size: 40px;
+    padding-left: 10px;
+}
+.container .one .result.display {
+    font-size: 40px;
+    padding-right: 10px;
+    align-self: flex-end;
 }
