@@ -82,7 +82,17 @@ function handle_operators(inputOperator) {
 
     if (calc.operandsActivated[0] && calc.operandsActivated[1] && calc.operator !== "") {
         // pairwise operation
-        calc.operands[0] = Math.round(operate(calc.operands[0], calc.operands[1], calc.operator) * 1000) / 1000;
+        let valueComputed = Math.round(operate(calc.operands[0], calc.operands[1], calc.operator) * 1000) / 1000;
+
+        if (valueComputed === 1/0) {
+            alert("You cannot divide by 0!");
+            return;
+        } else if (isNaN(valueComputed)) {
+            alert("You cannot have mod 0");
+            return;
+        }
+
+        calc.operands[0] = valueComputed;
         calc.operandsActivated[1] = false;
     }
 
