@@ -39,13 +39,14 @@ function button_set_up() {
     calc.ui.clearButton.addEventListener('click', () => (new_inputs()));
 }
 
-// Starts the calculation in a fresh mode.
+// Starts the calculator in a fresh mode.
 function new_inputs() {
     calc.operator = "";
     calc.operands = [0, 0];
     calc.currentOperandIndex = 0;
     calc.operandsActivated = [false, false];
-
+    calc.ui.leftDisplay.textContent = "";
+    calc.ui.rightDisplay.textContent = "";
 }
 
 // operation: The operation to perform
