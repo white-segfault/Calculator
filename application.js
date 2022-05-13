@@ -1,6 +1,12 @@
+let displayNum = NaN;
+let currentPow = 0;
+let operator = "";
+let operands = [0, 0];
+let currentOperandIndex = 0;
+let operandsActivated = [false, false];
+
 const add = function(numOne, numTwo) {
     return numOne + numTwo;
-
 };
 
 const subtract = function(numOne, numTwo) {
@@ -41,4 +47,23 @@ const factorial = function(num) {
 
     return total;
 };
+
+const numbers = document.querySelectorAll("button.numbers");
+const display = document.querySelector(".display");
+
+numbers.forEach((number) => {
+    number.addEventListener('click', function(e) {
+        let input = +number.getAttribute("id");
+        if (isNaN(displayNum)) {
+            displayNum = input;
+            operandsActivated[currentOperandIndex] = true;
+        } else {
+            displayNum = (displayNum * 10) + input;
+        }
+
+        operands[currentOperandIndex] = displayNum;
+        display.textContent = "" + displayNum;
+        e.stopPropagation(); // stop any possible bubbling
+    });
+});
 
