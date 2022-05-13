@@ -1,7 +1,52 @@
-let operator = "";
-let operands = [0, 0];
-let currentOperandIndex = 0;
-let operandsActivated = [false, false];
+const numbers = document.querySelectorAll("button.numbers");
+const leftDisplay = document.querySelector(".operation.display");
+const rightDisplay = document.querySelector(".result.display");
+const operations = document.querySelectorAll("button.operators");
+const clearButton = document.querySelector("#clear");
+let calc = {};
+newCalc();
+
+// Sets up the calculator
+function newCalc() {
+    calc.ui = {};
+    button_set_up();
+    new_inputs();
+}
+
+// Set up the buttons
+function button_set_up() {
+    // create buttons
+    calc.ui.numbers = document.querySelectorAll("button.numbers");
+    calc.ui.leftDisplay = document.querySelector(".operation.display");
+    calc.ui.rightDisplay = document.querySelector(".result.display");
+    calc.ui.operations = document.querySelectorAll("button.operators");
+    calc.ui.clearButton = document.querySelector("#clear");
+
+    // Adding event listener
+    // Handle number inputs
+    calc.ui.numbers.forEach((number) => {
+        number.addEventListener('click', () => (
+            handle_numbers(number.getAttribute("id")))
+        )
+    });
+
+    // Handle calc.operator inputs
+    calc.ui.operations.forEach((operation) => {
+        operation.addEventListener('click', () => (
+            handle_operators(operation.getAttribute("id")))
+        )
+    });
+    calc.ui.clearButton.addEventListener('click', () => (new_inputs()));
+}
+
+// Starts the calculation in a fresh mode.
+function new_inputs() {
+    calc.operator = "";
+    calc.operands = [0, 0];
+    calc.currentOperandIndex = 0;
+    calc.operandsActivated = [false, false];
+
+}
 
 // operation: The operation to perform
 // Computes the two number given based on their operation
@@ -23,61 +68,46 @@ function operate(numOne, numTwo, operation) {
     }
 }
 
-// Handles the corresponding input operator to match their
+// Handles the corresponding input calc.operator to match their
 // supposed functionality
-// inputOperator: The operator that the user currently inputs
+// inputOperator: The calc.operator that the user currently inputs
 function handle_operators(inputOperator) {
-    if (!operandsActivated[0] && !operandsActivated[1]){
+    if (!calc.operandsActivated[0] && !calc.operandsActivated[1]){
         return;  // nothing to compute
-    } else if (operandsActivated[0] && !operandsActivated[1] &&
-            (operator !== "" || inputOperator === "equal") ) {
-        return; // already have an operator, don't need more operator yet
+    } else if (calc.operandsActivated[0] && !calc.operandsActivated[1] &&
+            (calc.operator !== "" || inputOperator === "equal") ) {
+        return; // already have an calc.operator, don't need more calc.operator yet
     }
 
-    if (operandsActivated[0] && operandsActivated[1] && operator !== "") {
+    if (calc.operandsActivated[0] && calc.operandsActivated[1] && calc.operator !== "") {
         // pairwise operation
-        // handle divide by 0 case somewhere later(?
-        operands[0] = operate(operands[0], operands[1], operator);
-        operandsActivated[1] = false;
+        calc.operands[0] = Math.round(operate(calc.operands[0], calc.operands[1], calc.operator) * 1000) / 1000;
+        calc.operandsActivated[1] = false;
     }
 
+    calc.operands[1] = 0;
     if (inputOperator === "equal") {
-        operator = "";
-        leftDisplay.textContent = "";
-        rightDisplay.textContent = "" + operands[0];
+        calc.operator = "";
+        calc.ui.leftDisplay.textContent = "";
+        calc.ui.rightDisplay.textContent = "" + calc.operands[0];
+        calc.currentOperandIndex = 0;
     } else {
-        operator = inputOperator;
-        rightDisplay.textContent = "";
-        leftDisplay.textContent = "" + operands[0] + " " + operator;
+        calc.operator = inputOperator;
+        calc.ui.rightDisplay.textContent = "";
+        calc.ui.leftDisplay.textContent = "" + calc.operands[0] + " " + calc.operator;
+        calc.currentOperandIndex = 1;
     }
-    currentOperandIndex = 1;
 }
 
-const numbers = document.querySelectorAll("button.numbers");
-const leftDisplay = document.querySelector(".operation.display");
-const rightDisplay = document.querySelector(".result.display");
-const operations = document.querySelectorAll("button.operators");
-const clearButton = document.querySelector("#equal");
-
-numbers.forEach((number) => {
-    number.addEventListener('click', function(e) {
-        let input = +number.getAttribute("id");
-        if (!operandsActivated[currentOperandIndex]) {
-            operandsActivated[currentOperandIndex] = true;
-            operands[currentOperandIndex] = input;
-        } else {
-            operands[currentOperandIndex] = (operands[currentOperandIndex] * 10) + input;
-        }
-
-        rightDisplay.textContent = "" + operands[currentOperandIndex];
-        e.stopPropagation(); // stop any possible bubbling
-    });
-});
-
-operations.forEach((operation) => {
-    operation.addEventListener('click', function(e) {
-        let input = operation.getAttribute("id");
-        handle_operators(input);
-        e.stopPropagation();
-    })
-});
+// Handle number inputs by the user
+// input: input of the user in string
+function handle_numbers(input) {
+    input = +input;
+    if (!calc.operandsActivated[calc.currentOperandIndex]) {
+        calc.operandsActivated[calc.currentOperandIndex] = true;
+        calc.operands[calc.currentOperandIndex] = input;
+    } else {
+        calc.operands[calc.currentOperandIndex] = (calc.operands[calc.currentOperandIndex] * 10) + input;
+    }
+    calc.ui.rightDisplay.textContent = "" + calc.operands[calc.currentOperandIndex];
+}
