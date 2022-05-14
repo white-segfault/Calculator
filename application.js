@@ -35,13 +35,7 @@ function button_set_up() {
         )
     });
     calc.ui.clearButton.addEventListener('click', () => (new_inputs()));
-    calc.ui.decimalButton.addEventListener('click', () => {
-        if (calc.operandsActivated[calc.currentOperandIndex]
-                && !calc.decimalActivated[calc.currentOperandIndex]) {
-            calc.ui.rightDisplay.textContent += ".";
-            calc.decimalActivated[calc.currentOperandIndex] = true;
-        }
-    });
+    calc.ui.decimalButton.addEventListener('click', () => (handle_decimals()));
     calc.ui.backSpace.addEventListener('click', () => handle_backSpace());
     // keyboard support
     // Handles numbers and operators key input
@@ -57,6 +51,9 @@ function button_set_up() {
                 handle_operators(event.key);
                 return;
             }
+        }
+        if (event.key === ".") {
+            handle_decimals();
         }
     })
     // Handles backspace and reset keys
@@ -180,4 +177,13 @@ function handle_numbers(input) {
         }
     }
     calc.ui.rightDisplay.textContent = "" + calc.operands[calc.currentOperandIndex];
+}
+
+// Handles decimal inputs
+function handle_decimals() {
+    if (calc.operandsActivated[calc.currentOperandIndex]
+        && !calc.decimalActivated[calc.currentOperandIndex]) {
+            calc.ui.rightDisplay.textContent += ".";
+            calc.decimalActivated[calc.currentOperandIndex] = true;
+        }
 }

@@ -1,21 +1,32 @@
 body {
-    min-height: 100vh;
+    min-height: 92vh;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 10px;
+    padding-bottom: 50px;
 }
 
 .header .title {
     font-size: 30px;
 }
+
+.content {
+    display: flex;
+    width: 830px;
+    height: 820px;
+    border: 10px solid aquamarine;
+    border-radius: 10px;
+}
+
 .container {
     display: flex;
     flex-direction: column;
     width: 600px;
     height: 800px;
     border: 10px double darkblue;
+    border-radius: 5px;
 }
 
 /* general styling */
@@ -25,10 +36,10 @@ body {
 }
 .container button {
     font-size: 20px;
-    border-radius: 10px;
     flex: 1;
     border-style: groove;
     border-color: darkcyan;
+    border-radius: 5px;
     background: aliceblue;
 }
 
@@ -62,4 +73,15 @@ body {
     font-size: 40px;
     padding-right: 10px;
     align-self: flex-end;
+}
+
+.content .instruction {
+    padding: 5px;
+    width: 200px;
+    border-radius: 5px;
+    background-color: bisque;
+}
+
+.content .instruction li {
+    margin-top: 5px;
 }
