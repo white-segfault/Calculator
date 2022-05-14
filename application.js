@@ -1,3 +1,5 @@
+const NUMBERS = "1234567890";
+const OPERATORS = "%/*-+=";
 let calc = {};
 newCalc();
 
@@ -26,7 +28,6 @@ function button_set_up() {
             handle_numbers(number.getAttribute("id")))
         )
     });
-
     // Handle calc.operator inputs
     calc.ui.operations.forEach((operation) => {
         operation.addEventListener('click', () => (
@@ -41,20 +42,50 @@ function button_set_up() {
             calc.decimalActivated[calc.currentOperandIndex] = true;
         }
     });
-
-    calc.ui.backSpace.addEventListener('click', () => {
-        if (calc.ui.rightDisplay.textContent.length <= 0) {
-            // do nothing
-        } else if (calc.ui.rightDisplay.textContent.length === 1) {
-            calc.ui.rightDisplay.textContent = "";
-            calc.operands[calc.currentOperandIndex] = 0;
-            calc.operandsActivated[calc.currentOperandIndex] = false;
-        } else {
-            calc.ui.rightDisplay.textContent = calc.ui.rightDisplay.textContent.slice(0,
-                calc.ui.rightDisplay.textContent.length - 1);
-            calc.operands[calc.currentOperandIndex] = parseFloat(calc.ui.rightDisplay.textContent);
+    calc.ui.backSpace.addEventListener('click', () => handle_backSpace());
+    // keyboard support
+    // Handles numbers and operators key input
+    document.addEventListener('keypress', (event) => {
+        for (let i = 0; i < NUMBERS.length; ++i) {
+            if (NUMBERS[i] === event.key) {
+                handle_numbers(event.key);
+                return;
+            }
+        }
+        for (let i = 0; i < OPERATORS.length; ++i) {
+            if (OPERATORS[i] === event.key) {
+                handle_operators(event.key);
+                return;
+            }
+        }
+    })
+    // Handles backspace and reset keys
+    document.addEventListener('keydown', (event) => {
+        switch (event.key) {
+            case "Backspace":
+                handle_backSpace();
+                break;
+            case "Esc":
+            case "Escape":
+                new_inputs();
         }
     });
+}
+
+// Handles backspace key when pressed
+function handle_backSpace() {
+    if (calc.ui.rightDisplay.textContent.length <= 0) {
+        // do nothing
+    } else if (calc.ui.rightDisplay.textContent.length === 1 ||
+        (calc.ui.rightDisplay.textContent.length === 2 && calc.operands[calc.currentOperandIndex] < 0)) {
+        calc.ui.rightDisplay.textContent = "";
+        calc.operands[calc.currentOperandIndex] = 0;
+        calc.operandsActivated[calc.currentOperandIndex] = false;
+    } else {
+        calc.ui.rightDisplay.textContent = calc.ui.rightDisplay.textContent.slice(0,
+            calc.ui.rightDisplay.textContent.length - 1);
+        calc.operands[calc.currentOperandIndex] = parseFloat(calc.ui.rightDisplay.textContent);
+    }
 }
 
 // Starts the calculator in a fresh mode.
@@ -114,7 +145,7 @@ function handle_operators(inputOperator) {
     }
 
     calc.operands[1] = 0;
-    if (inputOperator === "equal") {
+    if (inputOperator === "equal" || inputOperator === "=") {
         calc.operator = "";
         calc.ui.leftDisplay.textContent = "";
         calc.ui.rightDisplay.textContent = "" + calc.operands[0];
@@ -141,7 +172,12 @@ function handle_numbers(input) {
             calc.operands[calc.currentOperandIndex] = parseFloat(calc.ui.rightDisplay.textContent);
             return;
         }
-        calc.operands[calc.currentOperandIndex] = (calc.operands[calc.currentOperandIndex] * 10) + input;
+
+        if (calc.operands[calc.currentOperandIndex]  >= 0) {
+            calc.operands[calc.currentOperandIndex] = (calc.operands[calc.currentOperandIndex] * 10) + input;
+        } else {
+            calc.operands[calc.currentOperandIndex] = (calc.operands[calc.currentOperandIndex] * 10) - input;
+        }
     }
     calc.ui.rightDisplay.textContent = "" + calc.operands[calc.currentOperandIndex];
 }
