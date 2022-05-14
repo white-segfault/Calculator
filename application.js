@@ -16,6 +16,7 @@ function button_set_up() {
     calc.ui.rightDisplay = document.querySelector(".result.display");
     calc.ui.operations = document.querySelectorAll("button.operators");
     calc.ui.clearButton = document.querySelector("#reset");
+    calc.ui.backSpace = document.querySelector("#backspace");
     calc.ui.decimalButton = document.querySelector("#decimal");
 
     // Adding event listener
@@ -38,6 +39,20 @@ function button_set_up() {
                 && !calc.decimalActivated[calc.currentOperandIndex]) {
             calc.ui.rightDisplay.textContent += ".";
             calc.decimalActivated[calc.currentOperandIndex] = true;
+        }
+    });
+
+    calc.ui.backSpace.addEventListener('click', () => {
+        if (calc.ui.rightDisplay.textContent.length <= 0) {
+            // do nothing
+        } else if (calc.ui.rightDisplay.textContent.length === 1) {
+            calc.ui.rightDisplay.textContent = "";
+            calc.operands[calc.currentOperandIndex] = 0;
+            calc.operandsActivated[calc.currentOperandIndex] = false;
+        } else {
+            calc.ui.rightDisplay.textContent = calc.ui.rightDisplay.textContent.slice(0,
+                calc.ui.rightDisplay.textContent.length - 1);
+            calc.operands[calc.currentOperandIndex] = parseFloat(calc.ui.rightDisplay.textContent);
         }
     });
 }
