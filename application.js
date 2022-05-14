@@ -78,7 +78,11 @@ function handle_backSpace() {
         calc.ui.rightDisplay.textContent = "";
         calc.operands[calc.currentOperandIndex] = 0;
         calc.operandsActivated[calc.currentOperandIndex] = false;
+        calc.decimalActivated[calc.currentOperandIndex] = false;
     } else {
+        if (calc.ui.rightDisplay.textContent[calc.ui.rightDisplay.textContent.length - 1] === ".") {
+            calc.decimalActivated[calc.currentOperandIndex] = false;
+        }
         calc.ui.rightDisplay.textContent = calc.ui.rightDisplay.textContent.slice(0,
             calc.ui.rightDisplay.textContent.length - 1);
         calc.operands[calc.currentOperandIndex] = parseFloat(calc.ui.rightDisplay.textContent);
@@ -123,13 +127,13 @@ function handle_operators(inputOperator) {
     if (!calc.operandsActivated[0] && !calc.operandsActivated[1]){
         return;  // nothing to compute
     } else if (calc.operandsActivated[0] && !calc.operandsActivated[1] &&
-            (calc.operator !== "" || inputOperator === "equal") ) {
-        return; // already have an calc.operator, don't need more calc.operator yet
+            (calc.operator !== "" || inputOperator === "equal" || inputOperator === "=") ) {
+        return; // already have an calc.operator, don't need more coperator yet
     }
 
     if (calc.operandsActivated[0] && calc.operandsActivated[1] && calc.operator !== "") {
         // pairwise operation
-        let valueComputed = Math.round(operate(calc.operands[0], calc.operands[1], calc.operator) * 1000) / 1000;
+        let valueComputed = Math.round(operate(calc.operands[0], calc.operands[1], calc.operator) * 100000) / 100000;
         if (valueComputed === 1/0) {
             alert("You cannot divide by 0!");
             return;
@@ -137,11 +141,14 @@ function handle_operators(inputOperator) {
             alert("You cannot have mod 0");
             return;
         }
-        calc.operands[0] = valueComputed;
+        calc.operands[0] = Math.min(valueComputed, 99999999999999);
+        calc.operands[0] = Math.max(calc.operands[0], -99999999999999);
         calc.operandsActivated[1] = false;
     }
 
     calc.operands[1] = 0;
+    calc.decimalActivated[0] = false;
+    calc.decimalActivated[1] = false;
     if (inputOperator === "equal" || inputOperator === "=") {
         calc.operator = "";
         calc.ui.leftDisplay.textContent = "";
@@ -165,15 +172,22 @@ function handle_numbers(input) {
     } else {
         // decimal mode
         if (calc.decimalActivated[calc.currentOperandIndex]) {
-            calc.ui.rightDisplay.textContent += "" + input;
-            calc.operands[calc.currentOperandIndex] = parseFloat(calc.ui.rightDisplay.textContent);
+            let value = calc.ui.rightDisplay.textContent + "" + input;
+            let decimalLength = value.split(".")[1].length;
+            if (decimalLength < 5 || decimalLength === 5) {
+                calc.operands[calc.currentOperandIndex] = Math.round(parseFloat(value) * 100000) / 100000;
+                calc.ui.rightDisplay.textContent = "" + calc.operands[calc.currentOperandIndex];
+            }
+
             return;
         }
 
         if (calc.operands[calc.currentOperandIndex]  >= 0) {
-            calc.operands[calc.currentOperandIndex] = (calc.operands[calc.currentOperandIndex] * 10) + input;
+            calc.operands[calc.currentOperandIndex] = Math.min(
+                (calc.operands[calc.currentOperandIndex] * 10) + input, 99999999999999);
         } else {
-            calc.operands[calc.currentOperandIndex] = (calc.operands[calc.currentOperandIndex] * 10) - input;
+            calc.operands[calc.currentOperandIndex] = Math.max(
+                (calc.operands[calc.currentOperandIndex] * 10) - input, -99999999999999);
         }
     }
     calc.ui.rightDisplay.textContent = "" + calc.operands[calc.currentOperandIndex];

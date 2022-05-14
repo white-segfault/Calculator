@@ -75,13 +75,13 @@ body {
     align-self: flex-end;
 }
 
-.content .instruction {
+.content .notice {
     padding: 5px;
     width: 200px;
     border-radius: 5px;
     background-color: bisque;
 }
 
-.content .instruction li {
+.content .notice li {
     margin-top: 5px;
 }
