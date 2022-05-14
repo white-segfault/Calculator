@@ -1,8 +1,3 @@
-const numbers = document.querySelectorAll("button.numbers");
-const leftDisplay = document.querySelector(".operation.display");
-const rightDisplay = document.querySelector(".result.display");
-const operations = document.querySelectorAll("button.operators");
-const clearButton = document.querySelector("#clear");
 let calc = {};
 newCalc();
 
@@ -21,6 +16,7 @@ function button_set_up() {
     calc.ui.rightDisplay = document.querySelector(".result.display");
     calc.ui.operations = document.querySelectorAll("button.operators");
     calc.ui.clearButton = document.querySelector("#clear");
+    calc.ui.decimalButton = document.querySelector("#decimal");
 
     // Adding event listener
     // Handle number inputs
@@ -37,12 +33,20 @@ function button_set_up() {
         )
     });
     calc.ui.clearButton.addEventListener('click', () => (new_inputs()));
+    calc.ui.decimalButton.addEventListener('click', () => {
+        if (calc.operandsActivated[calc.currentOperandIndex]
+                && !calc.decimalActivated[calc.currentOperandIndex]) {
+            calc.ui.rightDisplay.textContent += ".";
+            calc.decimalActivated[calc.currentOperandIndex] = true;
+        }
+    });
 }
 
 // Starts the calculator in a fresh mode.
 function new_inputs() {
     calc.operator = "";
     calc.operands = [0, 0];
+    calc.decimalActivated = [false, false];
     calc.currentOperandIndex = 0;
     calc.operandsActivated = [false, false];
     calc.ui.leftDisplay.textContent = "";
@@ -83,7 +87,6 @@ function handle_operators(inputOperator) {
     if (calc.operandsActivated[0] && calc.operandsActivated[1] && calc.operator !== "") {
         // pairwise operation
         let valueComputed = Math.round(operate(calc.operands[0], calc.operands[1], calc.operator) * 1000) / 1000;
-
         if (valueComputed === 1/0) {
             alert("You cannot divide by 0!");
             return;
@@ -91,7 +94,6 @@ function handle_operators(inputOperator) {
             alert("You cannot have mod 0");
             return;
         }
-
         calc.operands[0] = valueComputed;
         calc.operandsActivated[1] = false;
     }
@@ -118,6 +120,12 @@ function handle_numbers(input) {
         calc.operandsActivated[calc.currentOperandIndex] = true;
         calc.operands[calc.currentOperandIndex] = input;
     } else {
+        // decimal mode
+        if (calc.decimalActivated[calc.currentOperandIndex]) {
+            calc.ui.rightDisplay.textContent += "" + input;
+            calc.operands[calc.currentOperandIndex] = parseFloat(calc.ui.rightDisplay.textContent);
+            return;
+        }
         calc.operands[calc.currentOperandIndex] = (calc.operands[calc.currentOperandIndex] * 10) + input;
     }
     calc.ui.rightDisplay.textContent = "" + calc.operands[calc.currentOperandIndex];
