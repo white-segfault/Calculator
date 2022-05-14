@@ -145,16 +145,16 @@ function handle_operators(inputOperator) {
         calc.operands[0] = Math.max(calc.operands[0], -99999999999999);
         calc.operandsActivated[1] = false;
     }
-
-    calc.operands[1] = 0;
-    calc.decimalActivated[0] = false;
     calc.decimalActivated[1] = false;
+    calc.operands[1] = 0;
     if (inputOperator === "equal" || inputOperator === "=") {
         calc.operator = "";
         calc.ui.leftDisplay.textContent = "";
         calc.ui.rightDisplay.textContent = "" + calc.operands[0];
         calc.currentOperandIndex = 0;
+        calc.decimalActivated[0] = calc.ui.rightDisplay.textContent.split('.').length > 1;
     } else {
+        calc.decimalActivated[0] = false;
         calc.operator = inputOperator;
         calc.ui.rightDisplay.textContent = "";
         calc.ui.leftDisplay.textContent = "" + calc.operands[0] + " " + calc.operator;
@@ -176,7 +176,7 @@ function handle_numbers(input) {
             let decimalLength = value.split(".")[1].length;
             if (decimalLength < 5 || decimalLength === 5) {
                 calc.operands[calc.currentOperandIndex] = Math.round(parseFloat(value) * 100000) / 100000;
-                calc.ui.rightDisplay.textContent = "" + calc.operands[calc.currentOperandIndex];
+                calc.ui.rightDisplay.textContent = "" + value;
             }
 
             return;
