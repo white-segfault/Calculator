@@ -31,6 +31,9 @@ body {
     background: chocolate;
 }
 
+.container button.clear {
+    background: beige;
+}
 
 #\30 { /* id = 1 */
     flex: 2.12;

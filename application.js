@@ -15,7 +15,7 @@ function button_set_up() {
     calc.ui.leftDisplay = document.querySelector(".operation.display");
     calc.ui.rightDisplay = document.querySelector(".result.display");
     calc.ui.operations = document.querySelectorAll("button.operators");
-    calc.ui.clearButton = document.querySelector("#clear");
+    calc.ui.clearButton = document.querySelector("#reset");
     calc.ui.decimalButton = document.querySelector("#decimal");
 
     // Adding event listener
